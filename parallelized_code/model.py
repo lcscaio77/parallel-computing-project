@@ -42,13 +42,13 @@ class FireSpreadModel:
     """
     A fire propagation model in homogeneous vegetation.
     """
-    def __init__(self, domain_size: float, grid_size: int, wind_vector, 
+    def __init__(self, terrain_size: float, grid_size: int, wind_vector, 
                  fire_start_position, max_wind_speed: float = 60.0):
         """
         Initializes the fire propagation model.
         
         Parameters:
-        domain_size (float): Length of the square domain in km.
+        terrain_size (float): Length of the square domain in km.
         grid_size (int): Number of discretized grid cells in each direction.
         wind_vector (array-like): Wind direction and magnitude as a 2D vector.
         fire_start_position (tuple): Lexicographic indices where the fire starts.
@@ -57,9 +57,9 @@ class FireSpreadModel:
         if grid_size <= 0:
             raise ValueError("Grid size must be greater than zero.")
 
-        self.domain_size = domain_size
+        self.terrain_size = terrain_size
         self.grid_size = grid_size
-        self.cell_size = domain_size / grid_size
+        self.cell_size = terrain_size / grid_size
         self.wind_vector = np.array(wind_vector)
         self.wind_speed = norm(self.wind_vector)
         self.max_wind_speed = max_wind_speed

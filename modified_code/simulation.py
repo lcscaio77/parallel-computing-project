@@ -166,7 +166,7 @@ def run_simulation(parse_args, n_iterations=100):
     print("\n" + header + "\n")
 
     # Files to save the computing and rendering performances
-    with open("../results/computing_times.txt", "w") as compute_file, open("../results/rendering_times.txt", "w") as render_file:
+    with open("../results/computing_times_seq.txt", "w") as compute_file, open("../results/rendering_times_seq.txt", "w") as render_file:
         compute_file.write("Computing time\n")
         render_file.write("Rendering time\n")
 
