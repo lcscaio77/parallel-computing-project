@@ -1,0 +1,5 @@
+python3 simulation.py -l 1.0 -n 500 -w 1.0,1.0 -s 250,250
+
+mpiexec -np 2 python3 simulation.py -l 1.0 -n 500 -w 1.0,1.0 -s 250,250
+
+mpiexec -np 4 python3 simulation.py -l 1.0 -n 500 -w 1.0,1.0 -s 250,250

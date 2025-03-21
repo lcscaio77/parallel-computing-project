@@ -155,51 +155,64 @@ def run_simulation(parse_args, n_iterations=100):
     Parameters:
     parse_args (list): List of command-line arguments.
     """
+    # Model initialization
     params = initialize_simulation(parse_args)
-
-    pg.init()
     fire_model = model.FireSpreadModel(params["terrain_size"], params["grid_size"], params["wind_vector"], params["fire_start"])
+
+    # Display initialization
+    pg.init()
     fire_display = display.DisplayFire(params["grid_size"])
     fire_display.update(fire_model.fire_map, fire_model.vegetation_map)
 
     header = 20*"=" + " Running simulation " + 20*"="
     print("\n" + header + "\n")
 
-    # Files to save the computing and rendering performances
-    with open("../results/computing_times_seq.txt", "w") as compute_file, open("../results/rendering_times_seq.txt", "w") as render_file:
-        compute_file.write("Computing time\n")
-        render_file.write("Rendering time\n")
+    # File to save the rendering performances
+    render_file = open(f"../results/rendering_times_seq.txt", "w")
+    render_file.write("Rendering time\n")
 
-        must_continue = True
-        while must_continue and fire_model.time_step < n_iterations:
-            # Fire update computing time
-            start_time = time.time()
-            fire_update = fire_model.update_fire()
-            end_time = time.time()
-            compute_time = end_time - start_time
-            compute_file.write(f"{compute_time*1000:.6f}\n") # Computing time in ms
+    # File to save the computing performances
+    compute_file = open(f"../results/computing_times_seq.txt", "w")
+    compute_file.write("Computing time\n")
 
-            if fire_update: # If the fire is still burning
-                # Fire display rendering time
-                start_time = time.time()
-                fire_display.update(fire_model.fire_map, fire_model.vegetation_map)
-                end_time = time.time()
-                render_time = end_time - start_time
-                render_file.write(f"{render_time:.6f}\n") # Rendering time in ms
+    # Start of the simulation
+    must_continue = True
+    simulation_time_start = time.time()
+    while must_continue and fire_model.time_step < n_iterations:
+        # Model update
+        model_update_time_start = time.time()
+        fire_update = fire_model.update_fire()
 
-                if fire_model.time_step % 10 == 0:
-                    print(f"\tTimestep {fire_model.time_step}:")
-                    print(f"\t\tComputing time: {compute_time*1000:.6f}ms")
-                    print(f"\t\tRendering time: {render_time*1000:.6f}ms\n")
-                
-                # Stop the simulation if the user closed the display window
-                for event in pg.event.get():
-                    if event.type == pg.QUIT:
-                        must_continue = False
-                        pg.quit()
+        # Model update computing time
+        model_update_time = time.time() - model_update_time_start
+        compute_file.write(f"{model_update_time*1000:.3f}\n") # Computing time in ms
+
+        if fire_update: 
+            # Display update
+            display_update_time_start = time.time()
+            fire_display.update(fire_model.fire_map, fire_model.vegetation_map)
+
+            # Fire display rendering time
+            display_update_time = time.time() - display_update_time_start
+            render_file.write(f"{display_update_time:.3f}\n") # Rendering time in ms
+
+            if fire_model.time_step % 10 == 0: # Every 10 time steps we print some informations on the simulation
+                print(f"\tTimestep {fire_model.time_step}:")
+                print(f"\t\tComputing time: {model_update_time*1000:.3f}ms")
+                print(f"\t\tRendering time: {display_update_time*1000:.3f}ms\n")
+            
+            # Stop the simulation if the user closed the display window
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    must_continue = False
+                    pg.quit()
+
+    # Total simulation time
+    simulation_time = time.time() - simulation_time_start
+    print(f"\tTotal simulation time: {simulation_time:.3f}s\n")
 
     footer = 20*"=" + " End of simulation " + 20*"="
     print(footer + "\n")
 
 if __name__ == "__main__":
-    run_simulation(sys.argv[1:])
+    run_simulation(sys.argv[1:], n_iterations=250)
