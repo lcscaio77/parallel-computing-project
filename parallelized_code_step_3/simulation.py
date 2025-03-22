@@ -23,11 +23,11 @@ def analyze_arguments(args, parameters={}):
     Parses command-line arguments and updates the parameters dictionary.
     
     Parameters:
-    args (list): List of command-line arguments.
-    parameters (dict): Dictionary to store parsed parameters.
+        args (list): List of command-line arguments.
+        parameters (dict): Dictionary to store parsed parameters.
 
     Raises:
-    SyntaxError: If an expected argument value is missing or an unknown argument is encountered.
+        SyntaxError: If an expected argument value is missing or an unknown argument is encountered.
     """
     if len(args) == 0:
         return parameters
@@ -93,13 +93,13 @@ def check_parameters(params):
     Validates the simulation parameters.
     
     Parameters:
-    params (dict): Dictionary containing simulation parameters.
+        params (dict): Dictionary containing simulation parameters.
     
     Returns:
-    bool: True if parameters are valid, otherwise raises an error.
+        bool: True if parameters are valid, otherwise raises an error.
 
     Raises:
-    ValueError: If any parameter value is invalid.
+        ValueError: If any parameter value is invalid.
     """
     if params["terrain_size"] <= 0:
         raise ValueError("[FATAL ERROR] Terrain length must be positive!")
@@ -114,7 +114,7 @@ def display_parameters(params):
     Displays the defined parameters for the simulation.
     
     Parameters:
-    params (dict): Dictionary containing simulation parameters.
+        params (dict): Dictionary containing simulation parameters.
     """
     header = 20*"=" + " Simulation parameters " + 20*"="
     print("\n" + header + "\n")
@@ -129,10 +129,10 @@ def initialize_simulation(parse_args):
     Initializes the simulation with the parsed arguments and returns the parameters.
     
     Parameters:
-    parse_args (list): List of command-line arguments.
+        parse_args (list): List of command-line arguments.
     
     Returns:
-    dict: Dictionary containing simulation parameters.
+        dict: Dictionary containing simulation parameters.
     """
     params = {
         "terrain_size": 1.0,
@@ -155,7 +155,7 @@ def run_simulation(parse_args, n_iterations=250):
     Runs the fire simulation using the provided parameters.
     
     Parameters:
-    parse_args (list): List of command-line arguments.
+        parse_args (list): List of command-line arguments.
     """
     # Process 0 manages the display (and prints)
     if rank == 0:
@@ -308,13 +308,18 @@ def run_simulation(parse_args, n_iterations=250):
 
     if rank == 0:
         simulation_time = time.time() - simulation_time_start
-        print(f"\tTotal simulation time : {simulation_time}s", flush=True)
+        print(f"\tTotal simulation time : {simulation_time:.3f}s", flush=True)
+
+        simulation_file = open(f"../results/simulation_time_par_step_3.txt", "w")
+        simulation_file.write("Simulation time\n")
+        simulation_file.write(f"{simulation_time:.3f}\n")
+    
+        simulation_file.close()    
+        render_file.close()
+        compute_file.close()
 
         footer = 20*"=" + " End of simulation " + 20*"="
         print(footer + "\n", flush=True)
-            
-        render_file.close()
-        compute_file.close()
     elif rank > 0:
         compute_file.close()
 
@@ -324,4 +329,4 @@ if __name__ == "__main__":
     rank = comm.Get_rank()
     nbp = comm.Get_size()
 
-    run_simulation(sys.argv[1:], 250)
+    run_simulation(sys.argv[1:], 400)
