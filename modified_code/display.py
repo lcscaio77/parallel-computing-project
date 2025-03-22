@@ -15,7 +15,7 @@ class DisplayFire:
         Initializes the display window for fire and vegetation visualization.
         
         Parameters:
-        grid_size (int): Number of cells per direction in the simulation grid.
+            grid_size (int): Number of cells per direction in the simulation grid.
         """
         self.width = grid_size
         self.height = grid_size
@@ -27,8 +27,8 @@ class DisplayFire:
         Updates the visualization based on the current fire and vegetation maps.
         
         Parameters:
-        fire_map (np.ndarray): 2D array representing fire intensity (0-255) at each cell.
-        vegetation_map (np.ndarray): 2D array representing vegetation density (0-255) at each cell.
+            fire_map (np.ndarray): 2D array representing fire intensity (0-255) at each cell.
+            vegetation_map (np.ndarray): 2D array representing vegetation density (0-255) at each cell.
         """
         if self.pixels is None:
             self.pixels = pg.surfarray.pixels2d(self.screen)

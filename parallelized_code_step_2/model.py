@@ -16,11 +16,11 @@ def pseudo_random(index: int, time_step: int) -> float:
     This ensures that the simulation remains deterministic across executions.
     
     Parameters:
-    index (int): Unique index for the calculation.
-    time_step (int): The current simulation time step.
+        index (int): Unique index for the calculation.
+        time_step (int): The current simulation time step.
     
     Returns:
-    float: A pseudo-random number in the range [0,1].
+        float: A pseudo-random number in the range [0,1].
     """
     seed = index * (time_step + 1)
     rand_val = (48271 * seed) % 2147483647
@@ -31,10 +31,10 @@ def log_factor(value: int) -> float:
     Computes a logarithmic scaling factor for probability calculations.
     
     Parameters:
-    value (int): The input value to scale.
+        value (int): The input value to scale.
     
     Returns:
-    float: Logarithmic scaling factor.
+        float: Logarithmic scaling factor.
     """
     return log(1. + value) / log(256)
 
@@ -48,11 +48,11 @@ class FireSpreadModel:
         Initializes the fire propagation model.
         
         Parameters:
-        terrain_size (float): Length of the square domain in km.
-        grid_size (int): Number of discretized grid cells in each direction.
-        wind_vector (array-like): Wind direction and magnitude as a 2D vector.
-        fire_start_position (tuple): Lexicographic indices where the fire starts.
-        max_wind_speed (float): Maximum wind speed (km/h) beyond which fire cannot propagate against the wind.
+            terrain_size (float): Length of the square domain in km.
+            grid_size (int): Number of discretized grid cells in each direction.
+            wind_vector (array-like): Wind direction and magnitude as a 2D vector.
+            fire_start_position (tuple): Lexicographic indices where the fire starts.
+            max_wind_speed (float): Maximum wind speed (km/h) beyond which fire cannot propagate against the wind.
         """
         if grid_size <= 0:
             raise ValueError("Grid size must be greater than zero.")
@@ -96,10 +96,10 @@ class FireSpreadModel:
         Returns a unique index for lexicographic coordinates.
         
         Parameters:
-        coordinates (tuple): The (column, row) position in the grid.
+            coordinates (tuple): The (column, row) position in the grid.
         
         Returns:
-        int: A unique index corresponding to the given coordinates.
+            int: A unique index corresponding to the given coordinates.
         """
         return coordinates[ROW] * self.grid_size + coordinates[COLUMN]
 
@@ -108,7 +108,7 @@ class FireSpreadModel:
         Updates the fire and vegetation maps by computing fire spread.
         
         Returns:
-        bool: True if the fire is still burning, False otherwise.
+            bool: True if the fire is still burning, False otherwise.
         """
         next_fire_front = copy.deepcopy(self.fire_front)
         

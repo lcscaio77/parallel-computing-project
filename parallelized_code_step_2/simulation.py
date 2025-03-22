@@ -22,11 +22,11 @@ def analyze_arguments(args, parameters={}):
     Parses command-line arguments and updates the parameters dictionary.
     
     Parameters:
-    args (list): List of command-line arguments.
-    parameters (dict): Dictionary to store parsed parameters.
+        args (list): List of command-line arguments.
+        parameters (dict): Dictionary to store parsed parameters.
 
     Raises:
-    SyntaxError: If an expected argument value is missing or an unknown argument is encountered.
+        SyntaxError: If an expected argument value is missing or an unknown argument is encountered.
     """
     if len(args) == 0:
         return parameters
@@ -92,13 +92,13 @@ def check_parameters(params):
     Validates the simulation parameters.
     
     Parameters:
-    params (dict): Dictionary containing simulation parameters.
+        params (dict): Dictionary containing simulation parameters.
     
     Returns:
-    bool: True if parameters are valid, otherwise raises an error.
+        bool: True if parameters are valid, otherwise raises an error.
 
     Raises:
-    ValueError: If any parameter value is invalid.
+        ValueError: If any parameter value is invalid.
     """
     if params["terrain_size"] <= 0:
         raise ValueError("[FATAL ERROR] Terrain length must be positive!")
@@ -113,7 +113,7 @@ def display_parameters(params):
     Displays the defined parameters for the simulation.
     
     Parameters:
-    params (dict): Dictionary containing simulation parameters.
+        params (dict): Dictionary containing simulation parameters.
     """
     header = 20*"=" + " Simulation parameters " + 20*"="
     print("\n" + header + "\n")
@@ -128,10 +128,10 @@ def initialize_simulation(parse_args):
     Initializes the simulation with the parsed arguments and returns the parameters.
     
     Parameters:
-    parse_args (list): List of command-line arguments.
+        parse_args (list): List of command-line arguments.
     
     Returns:
-    dict: Dictionary containing simulation parameters.
+        dict: Dictionary containing simulation parameters.
     """
     params = {
         "terrain_size": 1.0,
@@ -154,7 +154,7 @@ def run_simulation(parse_args, n_iterations=100):
     Runs the fire simulation using the provided parameters.
     
     Parameters:
-    parse_args (list): List of command-line arguments.
+        parse_args (list): List of command-line arguments.
     """
     # Process 0 manages the display (and prints)
     if rank == 0:
@@ -179,7 +179,7 @@ def run_simulation(parse_args, n_iterations=100):
         fire_display.update(fire_model.fire_map, fire_model.vegetation_map)
 
         header = 20*"=" + " Running simulation " + 20*"="
-        print("\n" + header + "\n")
+        print("\n" + header + "\n", flush=True)
 
     if rank == 0:
         # File to save the rendering performances
@@ -225,9 +225,9 @@ def run_simulation(parse_args, n_iterations=100):
 
                 if fire_model.time_step % 10 == 0: # Every 10 time steps we print some informations on the simulation
                     model_update_time = comm.recv(source=1, tag=9)  
-                    print(f"\tTimestep {fire_model.time_step}:")
-                    print(f"\t\tComputing time: {model_update_time*1000:.3f}ms")
-                    print(f"\t\tRendering time: {display_update_time*1000:.3f}ms\n")
+                    print(f"\tTimestep {fire_model.time_step}:", flush=True)
+                    print(f"\t\tComputing time: {model_update_time*1000:.3f}ms", flush=True)
+                    print(f"\t\tRendering time: {display_update_time*1000:.3f}ms\n", flush=True)
             
                 # Stop the simulation if the user closed the display window
                 for event in pg.event.get():
@@ -238,12 +238,17 @@ def run_simulation(parse_args, n_iterations=100):
     if rank == 0:
         # Total simulation time
         simulation_time = time.time() - simulation_time_start
-        print(f"\tTotal simulation time: {simulation_time:.3f}s\n")
+        print(f"\tTotal simulation time: {simulation_time:.3f}s\n", flush=True)
+
+        simulation_file = open(f"../results/simulation_time_par_step_2.txt", "w")
+        simulation_file.write("Simulation time\n")
+        simulation_file.write(f"{simulation_time:.3f}\n")
+        
+        simulation_file.close()
+        render_file.close()
 
         footer = 20*"=" + " End of simulation " + 20*"="
-        print(footer + "\n")
-
-        render_file.close()
+        print(footer + "\n", flush=True)
     elif rank == 1:
         compute_file.close()
 
@@ -254,4 +259,4 @@ if __name__ == "__main__":
     nbp = comm.size
     rank = comm.rank
 
-    run_simulation(sys.argv[1:], n_iterations=250)
+    run_simulation(sys.argv[1:], n_iterations=400)
